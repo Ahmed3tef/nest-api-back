@@ -1,0 +1,22 @@
+- nest js module is what holds all controllers and services.
+
+- separation of concern is important in nest.
+
+- controllers are responsible for handling the incoming requests and returning the responses (choose from services logic).
+- services (providers) are responsible for business logic.
+
+- عشان نقدر نربط بين ال services and controllers من نفس ال module لازم نعمل كذا خطوة عشان يتقدروا يتعرفوا علي بعض والنست تقدر تربط بينهم بدون تدخل منك
+
+1- بعد ما تعمل السرفس و الكنترولر هتروح ف الكنترولر و تضيف السرفس ف الكونستراكتور بتاع الكنترولر 
+
+export class AuthController{
+  constructor(private authService: AuthService){}
+}
+
+2- هتروح ف الموديول و تضيف الكنترولرز و السرفسز ف الموديول ديكوريتور
+
+@Module({
+  controllers:[AuthController],
+  providers:[AuthService]
+})
+
