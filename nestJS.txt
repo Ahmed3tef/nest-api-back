@@ -153,3 +153,13 @@ async function bootstrap() {
 === 
 هنستخدم باكدج هاش للباسورد اسمها argon2
 npm i argon2 
+===
+
+في طريقتين عشان تجيب عنصر من التيبل ف الداتا بيز ف بريزما
+
+1- findUnique() ودي انت بتدور فيها بالعناصر اليونيك بس زي الميل والباس او اليوزرنيم
+const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+});
+
+2- findFirst() دي انت بتدور فيها بأي عنصر عادي 
