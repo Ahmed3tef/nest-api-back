@@ -2,7 +2,7 @@
 /dist
 /node_modules
 /app-post.txt
-/nestJS.txt
+nestJS.txt
 
 # Logs
 logs
@@ -35,3 +35,6 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+.env
+.env.test
