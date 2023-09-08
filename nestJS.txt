@@ -78,9 +78,11 @@ model User{
 
 model Bookmark{
   userId Int لازم هتحط فيلد للاي دي بتاع اليوزر اللي مربوط بيه الداتا 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   هنا بتحط الريليشن نفسها وتقوله ايه الفيلد اللي هنا بيساوي الرفرنس اللي ف المودل نفسه
    وبتعرفه ايه المودل اللي انت مربوط بيه 
+
+onDelete: Cascade دي معناها ان لما البيرنت بتاع البوكمارك يتمسح ف هي كمان تتمسح 
 
   @@map("bookmarks")
 
@@ -163,3 +165,126 @@ const user = await this.prisma.user.findUnique({
 });
 
 2- findFirst() دي انت بتدور فيها بأي عنصر عادي 
+
+===
+
+jwt auth in nest 
+
+to use it we need to install these packages: 
+- npm i @nestjs/jwt @nestjs/passport passport passport-jwt
+- npm i -D @types/passport-jwt
+
+
+
+////
+testing 
+
+    "test:e2e": "jest --watch --no-cache --config ./test/jest-e2e.json"
+
+هنكتب السكربت دا ف الباكدج جيسون سكربت 
+دا واحنا بنعمل تست هيخلي الحاجة  تشتغل لايف كل ما حاجة تتغير 
+وبنشيل الكاش عشان ميخزنش ويتقل الجهاز 
+
+التست بتاعنا هيتعمل ف ملف ال app.e2e-spec.ts
+
+ف الاول بنعمل حاجة اسمها دسكرايب ودي بنعرف فيها التست بتاعنا هيتعمل علي ايه بالظبط
+وهي بتاخد اول بارام هو اسم التست بتاعنا 
+والتاني هو الفنشكن اللي هتحصل واللي هو التست نفسه 
+describe('App e2e', () => {
+  احنا المفروض عايزين نعمل السرفر موديول اللي ف المين جي اس اللي موجود ف المين اب فولدر
+  ف احنا محتاجين نعمل 
+  1- حاجة تمكننا اننا نستخدم الابلكيشن سرفر هنا ف ملف التست دا 
+  2- نربط بين السرفر و المين موديول بتاعنا اللي رابط بين كل الموديولز وبعض 
+  3- كل الاوامر اللي كانت معمولة علي السرفر قبل ما نعمله رن محتاجين نعملها هنا 
+  4- محتاجين نرن السرفر 
+
+  let app: INestApplication; هنا احنا جبنا الاب سرفر عشان نقدر نستخدم الاوامر بتاعته
+
+  الميثود دي بتخليني اعمل اوامر معينة قبل ما اعمل التست 
+  beforeAll(async () => {
+    دي طريقة تعريف الموديول بتاعنا ف بيئة التست 
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile(); بعد ما بنعرفه بنعمل كومبايل ليه 
+
+    بعد كدا بتقول ان احنا عايزين نكريت نست ابلكيشن اللي هو السرفر اللي هو موجود ف ملف المين 
+    من الاب موديول اللي احنا عملناله كومبايل 
+    app = moduleRef.createNestApplication();
+    بعد كدا لو في عندك اوامر كنت عاملها ف ملف المين بتحطها قبل ما تعمل لسن للسرفر
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+      }),
+    );
+    بعد كدا بتلسن ع السرفر
+    await app.init();
+  });
+
+  ف الفنكشن دي هيعمل اللي فيها بعد ما يخلص
+  afterAll(async () => {
+    app.close();
+  });
+
+  it.todo('should pass') 
+});
+
+
+// 
+احنا وقت التست هنكون عايزين نعمل داتابيز خاصة بالتست 
+بالتالي هنحط داتابيز جديدة علي بورت جديد ف الدوكر فايل 
+بالتالي هنكون محتاجين نغير لينك الداتابيز عشان يبقا ع البورت الجديد ف ملف ال .env
+عشان كدا المفروض هنعمل فايل تاني فيه المتغيرات الجديدة الخاصة بالتست وهنسميه .env.test
+هتقابلنا مشكلة ان بريزما مبياخدش باله غير من الملف الاول اللي كان موجود 
+بالتالي عايزين حاجة تغير الانفايرونمنت فايل دا وتخلي الاساسي والرئيسي هو بتاع التست ف حالة التست 
+وفي باكدج هتخلينا نقدر نعمل دا ف حالة التست وهي dotenv
+
+===
+1- => npm i -D dotenv-cli
+===
+2- بعد كدا هنروح نعمل داتابيز جديدة خاصة بالتست ف ملف الدوكر 
+
+version: '4.2'
+services:
+  dev-db:
+    image: postgres:13
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+  test-db: دي الجديدة 
+    image: postgres:13
+    ports:
+      - 5435:5432 وغيرنا البورت هنا
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+===
+3- هنعمل ملف التست انفايرونمنت ونحط فيه المتغيرت الجديدة 
+===
+4- هنحط سكربتات جديدة ف ملف الباكدج جيسون عشان التست 
+
+  1- سكربتات الداتابيز 
+  "prisma:test:deploy": "dotenv -e .env.test -- prisma migrate deploy",
+  "db:test:rm": "docker compose rm test-db -s -f -v",
+  "db:test:up": "docker compose up test-db -d",
+  "db:test:restart": "npm run db:test:rm && npm run db:test:up && sleep 1 && npm run prisma:test:deploy",
+
+  2- سكربتات رن التست
+  "pretest:e2e": "npm run db:test:restart",
+  "test:e2e": "dotenv -e .env.test -- jest --watch --no-cache --config ./test/jest-e2e.json"
+
+  اما بتكتب pre مع اي امر انت كاتبه هنا ف هو هيتعمل تلقائي من غير ما تكتبه ك تحضير قبل الامر نفسه 
+  احنا هنا عملنا "pretest:e2e" ف احنا اما نرن ال test:e2e ف الترمنال هو هيروح يعمل البري الاول لواحده
+  بعدين هيروح يعمل الامر بتاع التست عادي 
+===
+5- الحتت اللي عايزين نغير فيها الانفايرونمنت فايل احنا بنحط ف الاوامر بتاعتها 
+dotenv -e .env.test -- 
+قبل الاوامر نفسها 
+
+ودا بيقوله غير الانفايرونمنت فايل الاساسي ل اللي ف الباث اللي كتبناه جديد وهو .env.test 
+وهو اتكتب كدا لانه معاه ف نفس الفولدر لو كان نستد كنا هنعمله نستد 
+والافضل انه يكون ف نفس الفولدر
+===

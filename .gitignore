@@ -1,6 +1,8 @@
 # compiled output
 /dist
 /node_modules
+/app-post.txt
+/nestJS.txt
 
 # Logs
 logs
